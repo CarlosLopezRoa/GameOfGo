@@ -98,7 +98,7 @@ to go
    go_whites
    ask blacks [check-survivability]
    if (num-whitess = 0 or num-blackss = 0 ) [stop]
-
+   ask links [set hidden? true]
    set global-temperature (sum [temperature] of patches)
    set global-score-blacks (max [score-blacks] of blacks ) 
    set global-score-whites (max [score-whites] of whites )
