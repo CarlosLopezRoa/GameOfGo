@@ -224,7 +224,7 @@ end
 to go_blacks
   set blacks-pass false
   ifelse count (patches with [not any? whites-here  and not any?  blacks-here
-    and (count (turtles-on neighbors4 with [any? whites-here]) < count(neighbors4))
+    and ((count (turtles-on neighbors4 with [any? whites-here]) < count(neighbors4) ))
     and (count (turtles-on neighbors4 with [any? blacks-here]) < count(neighbors4))
     ]) != 0
   [
@@ -321,11 +321,11 @@ end
 GRAPHICS-WINDOW
 424
 10
-784
-391
-3
-3
-50.0
+709
+313
+-1
+-1
+25.0
 1
 10
 1
@@ -335,10 +335,10 @@ GRAPHICS-WINDOW
 0
 0
 1
--3
-3
--3
-3
+0
+9
+0
+9
 1
 1
 1
@@ -416,10 +416,10 @@ NIL
 HORIZONTAL
 
 SWITCH
-442
-553
-592
-586
+11
+569
+161
+602
 show-temp-map?
 show-temp-map?
 0
@@ -461,10 +461,10 @@ NIL
 1
 
 SWITCH
-441
-513
-591
-546
+10
+529
+160
+562
 show-blacks?
 show-blacks?
 0
@@ -557,10 +557,10 @@ NIL
 HORIZONTAL
 
 BUTTON
-751
-513
-886
-558
+19
+357
+154
+402
 remove all daisies
 ask daisies [die]\ndisplay
 NIL
@@ -574,10 +574,10 @@ NIL
 1
 
 BUTTON
-611
-563
-746
-606
+18
+416
+153
+459
 paint daisies
 paint-blacks
 T
@@ -591,10 +591,10 @@ NIL
 1
 
 CHOOSER
-611
-513
-747
-558
+14
+470
+150
+515
 paint-blacks-as
 paint-blacks-as
 "add black" "add white" "remove"
