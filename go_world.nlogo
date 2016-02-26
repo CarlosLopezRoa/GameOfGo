@@ -85,11 +85,14 @@ to go
    ask whites [check-survivability]
    go_whites
    ask blacks [check-survivability]
+   
    set global-temperature (sum [temperature] of patches)
-   update-display
    if (num-whitess = 0 or num-blackss = 0 ) [stop]
-   set global-score-blacks (max [score-blacks] of blacks)
-   set global-score-whites (max [score-whites] of whites)
+   set global-score-blacks (max [score-blacks] of blacks ) 
+   set global-score-whites (max [score-whites] of whites )
+   ask blacks [set score-blacks max [score-blacks] of blacks]
+   ask whites [set score-whites max [score-whites] of whites]
+   update-display
    tick
  ;  if (scenario = "ramp-up-ramp-down")
  ;  [
@@ -121,13 +124,8 @@ to check-survivability ;; turtle procedure
 ;  let seed-threshold 0
 ;  let not-empty-spaces nobody
 ;  let seeding-place nobody
-if breed = whites
- [ set libertynot count(neighbors4) - count(turtles-on neighbors4)
-   set libertygroup (sum [libertynot] of link-neighbors)]
-if breed = blacks
- [ ;create-links-with [neighbors4] of link-neighbors
-   set libertynot count(neighbors4) - count(turtles-on neighbors4)
-   set libertygroup (sum [libertynot] of link-neighbors)]
+;if breed = whites [ ]
+;if breed = blacks [ ]
  ; set age (age + 1)
   if ;1 = 0;
   libertynot = 0 and libertygroup = 0
@@ -163,7 +161,7 @@ if breed = blacks
    ;     1) ]
         ;count(whites with [libertynot >= count(turtles-on neighbors4 with [any? blacks-here])]))
    ; ask whites with [libertynot >= count(turtles-on neighbors4 with [any? blacks-here])] 
-    [ask whites [set score-whites (score-whites + 1) ] 
+    [ask whites [set score-whites (score-whites + count(link-neighbors) + 1) ] 
      ask link-neighbors [die]
      die]
   ;]
@@ -173,7 +171,7 @@ if breed = blacks
   
         ;count( blacks with [libertynot >= count(turtles-on neighbors4 with [any? whites-here])])) ]
    ; ask blacks with [libertynot >= count(turtles-on neighbors4 with [any? whites-here])] 
-    [ask blacks [set score-blacks (score-blacks + 1 ) ]
+    [ask blacks [set score-blacks (score-blacks + count(link-neighbors) + 1) ]
       ask link-neighbors [die]
       die]
   ;ask blacks [set score-whites (score-whites + 1)]
@@ -192,6 +190,8 @@ to go_blacks
   ]
   [stop
   ]
+   ask blacks [set libertynot count(neighbors4) - count(turtles-on neighbors4)
+   set libertygroup (sum [libertynot] of link-neighbors + libertynot)]
 end
 
 to go_whites
@@ -204,6 +204,8 @@ to go_whites
     ]
        [stop
        ]
+   ask whites [set libertynot count(neighbors4) - count(turtles-on neighbors4)
+   set libertygroup (sum [libertynot] of link-neighbors + libertynot)]
 end
 
 to calc-temperature  ;; patch procedure
