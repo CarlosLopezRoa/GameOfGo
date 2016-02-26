@@ -10,6 +10,7 @@ globals [
 
 breed [blacks]
 breed [whites]
+undirected-link-breed [teams team]
 
 patches-own [temperature
 ;  score-blacks
@@ -21,6 +22,7 @@ blacks-own [
 ;  albedo    ;; fraction (0-1) of energy absorbed as heat from sunlight
   libertynot   ;; free liberties
   score-blacks
+  libertygroup
 ]
 
 whites-own [
@@ -28,6 +30,7 @@ whites-own [
 ;  albedo    ;; fraction (0-1) of energy absorbed as heat from sunlight
   libertynot   ;; free liberties
   score-whites
+  libertygroup
 ]
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -103,6 +106,7 @@ to set-as-blacks ;; turtle procedure
 ;  set albedo albedo-of-blackss
 ;  set age 0
   set size 0.6
+  create-links-with turtles-on neighbors4 with [any? blacks-here]
 end
 
 to set-as-whites  ;; turtle procedure
@@ -110,6 +114,7 @@ to set-as-whites  ;; turtle procedure
 ;  set albedo albedo-of-whitess
 ;  set age 0
   set size 0.6
+  create-links-with turtles-on neighbors4 with [any? whites-here]
 end
 
 to check-survivability ;; turtle procedure
@@ -117,11 +122,15 @@ to check-survivability ;; turtle procedure
 ;  let not-empty-spaces nobody
 ;  let seeding-place nobody
 if breed = whites
- [set libertynot (count(neighbors4) - count(turtles-on neighbors4 with [any? blacks-here]))]
+ [ set libertynot count(neighbors4) - count(turtles-on neighbors4)
+   set libertygroup (sum [libertynot] of link-neighbors)]
 if breed = blacks
- [set libertynot (count(neighbors4) - count(turtles-on neighbors4 with [any? whites-here]))]
+ [ ;create-links-with [neighbors4] of link-neighbors
+   set libertynot count(neighbors4) - count(turtles-on neighbors4)
+   set libertygroup (sum [libertynot] of link-neighbors)]
  ; set age (age + 1)
-  if libertynot = 0
+  if ;1 = 0;
+  libertynot = 0 and libertygroup = 0
   ;[
   ;   set seed-threshold (-(temperature - 2) ^ 2 + 1 );((0.1457 * temperature) - (0.0032 * (temperature ^ 2)) - (0.6443))
      ;; This equation may look complex, but it is just a parabola.
@@ -154,7 +163,9 @@ if breed = blacks
    ;     1) ]
         ;count(whites with [libertynot >= count(turtles-on neighbors4 with [any? blacks-here])]))
    ; ask whites with [libertynot >= count(turtles-on neighbors4 with [any? blacks-here])] 
-    [ask whites [set score-whites (score-whites + 1) ] die]
+    [ask whites [set score-whites (score-whites + 1) ] 
+     ask link-neighbors [die]
+     die]
   ;]
   if (breed = blacks)
   ;[ ask blacks [set score-blacks (score-blacks + 
@@ -162,7 +173,9 @@ if breed = blacks
   
         ;count( blacks with [libertynot >= count(turtles-on neighbors4 with [any? whites-here])])) ]
    ; ask blacks with [libertynot >= count(turtles-on neighbors4 with [any? whites-here])] 
-    [ask blacks [set score-blacks (score-blacks + 1 ) ]die]
+    [ask blacks [set score-blacks (score-blacks + 1 ) ]
+      ask link-neighbors [die]
+      die]
   ;ask blacks [set score-whites (score-whites + 1)]
   ;]
 
@@ -455,7 +468,7 @@ NIL
 100.0
 true
 false
-"" "set num-whitess (count turtles with [color = white] - global-score-whites)\nset num-blackss (count turtles with [color = black] - global-score-blacks)"
+"" "set num-whitess (count turtles with [color = white] + global-score-blacks)\nset num-blackss (count turtles with [color = black] + global-score-whites)"
 PENS
 "blacks" 1.0 0 -16777216 true "" "plot (num-blackss)"
 "whites" 1.0 0 -7500403 true "" "plot (num-whitess)"
