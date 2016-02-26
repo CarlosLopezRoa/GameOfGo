@@ -8,6 +8,7 @@ globals [
   global-score-whites
   blacks-pass
   whites-pass
+  winner 
   ]
 
 breed [blacks]
@@ -48,6 +49,7 @@ to setup
   ask patches [ set pcolor gray ]
 
 ;  set max-age 25
+  set winner nobody
   set global-temperature 0
   ask blacks [set score-blacks 0]
   ask whites [set score-whites 0]
@@ -105,7 +107,14 @@ to go
    update-display
    tick
   ]
-  [stop]
+  [ if num-blackss > num-whitess
+    [set winner "Blacks"]
+    if num-blackss < num-whitess
+    [set winner "Whites"]
+    if num-blackss = num-whitess
+    [set winner "Tie"]
+    output-print (word winner "  wins")
+    stop]
  ;  if (scenario = "ramp-up-ramp-down")
  ;  [
  ;    if (ticks > 200 and ticks <= 400) [set solar-luminosity solar-luminosity + 0.005]
@@ -321,11 +330,11 @@ end
 GRAPHICS-WINDOW
 424
 10
-709
-313
+984
+591
 -1
 -1
-25.0
+55.0
 1
 10
 1
