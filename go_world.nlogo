@@ -224,11 +224,11 @@ end
 GRAPHICS-WINDOW
 424
 10
-984
-591
+974
+581
 -1
 -1
-55.0
+27.0
 1
 10
 1
@@ -239,9 +239,9 @@ GRAPHICS-WINDOW
 0
 1
 0
-9
+19
 0
-9
+19
 1
 1
 1
@@ -324,9 +324,9 @@ PENS
 
 PLOT
 220
-173
+358
 420
-323
+593
 Score
 NIL
 NIL
@@ -366,7 +366,7 @@ CHOOSER
 paint-blacks-as
 paint-blacks-as
 "add black" "add white" "remove"
-0
+1
 
 BUTTON
 7
@@ -409,7 +409,7 @@ SWITCH
 388
 show-connections?
 show-connections?
-0
+1
 1
 -1000
 
