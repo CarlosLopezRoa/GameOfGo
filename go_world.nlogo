@@ -125,6 +125,11 @@ to go
 ;   if (scenario = "high solar luminosity") [set solar-luminosity 1.4 ]
 end
 
+to experiment
+    if winner != nobody [setup]
+    go
+end
+
 to set-as-blacks ;; turtle procedure
   set color black
 ;  set albedo albedo-of-blackss
@@ -616,6 +621,23 @@ BUTTON
 126
 Go 4ever
 go
+T
+1
+T
+OBSERVER
+NIL
+NIL
+NIL
+NIL
+1
+
+BUTTON
+107
+93
+209
+126
+Experiment
+experiment
 T
 1
 T
