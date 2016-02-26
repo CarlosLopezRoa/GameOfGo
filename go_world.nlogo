@@ -6,6 +6,8 @@ globals [
   scenario-phase        ;; interval counter used to keep track of what portion of scenario is currently occurring
   global-score-blacks
   global-score-whites
+  blacks-pass
+  whites-pass
   ]
 
 breed [blacks]
@@ -23,6 +25,7 @@ blacks-own [
   libertynot   ;; free liberties
   score-blacks
   libertygroup
+  explored?
 ]
 
 whites-own [
@@ -31,6 +34,7 @@ whites-own [
   libertynot   ;; free liberties
   score-whites
   libertygroup
+  explored?
 ]
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -47,14 +51,16 @@ to setup
   set global-temperature 0
   ask blacks [set score-blacks 0]
   ask whites [set score-whites 0]
+  set blacks-pass false
+  set whites-pass false
 ;  if (scenario = "ramp-up-ramp-down"    ) [ set solar-luminosity 0.8 ]
 ;  if (scenario = "low solar luminosity" ) [ set solar-luminosity 0.6 ]
 ;  if (scenario = "our solar luminosity" ) [ set solar-luminosity 1.0 ]
 ;  if (scenario = "high solar luminosity") [ set solar-luminosity 1.4 ]
   seed-blackss-randomly
   seed-whitess-randomly
- ; ask blacks [go_blacks]
- ; ask whites [go_whites]
+;  ask blacks [go_blacks]
+;  ask whites [go_whites]
 ;  ask blacks [set age random max-age]
   ask patches [calc-temperature]
   set global-temperature (mean [temperature] of patches)
@@ -63,13 +69,15 @@ to setup
 end
 
 to seed-blackss-randomly
-   ask n-of 1 patches with [not any? blacks-here and not any? whites-here]
-     [ sprout-blacks 1 [set-as-blacks] ]
+   ;ask n-of 1 patches with [not any? blacks-here and not any? whites-here]
+    ; [ sprout-blacks 1 [set-as-blacks] ]
+     go_blacks
 end
 
 to seed-whitess-randomly
-   ask n-of 1 patches with [not any? blacks-here and not any? whites-here]
-     [ sprout-whites 1 [set-as-whites] ]
+   ;ask n-of 1 patches with [not any? blacks-here and not any? whites-here]
+    ; [ sprout-whites 1 [set-as-whites] ]
+     go_whites
 end
 
 
@@ -79,21 +87,25 @@ end
 
 
 to go
+  ifelse not blacks-pass or  not whites-pass 
+  [
    ask patches [calc-temperature]
    diffuse temperature .5
    go_blacks
    ask whites [check-survivability]
    go_whites
    ask blacks [check-survivability]
-   
-   set global-temperature (sum [temperature] of patches)
    if (num-whitess = 0 or num-blackss = 0 ) [stop]
+
+   set global-temperature (sum [temperature] of patches)
    set global-score-blacks (max [score-blacks] of blacks ) 
    set global-score-whites (max [score-whites] of whites )
    ask blacks [set score-blacks max [score-blacks] of blacks]
    ask whites [set score-whites max [score-whites] of whites]
    update-display
    tick
+  ]
+  [stop]
  ;  if (scenario = "ramp-up-ramp-down")
  ;  [
  ;    if (ticks > 200 and ticks <= 400) [set solar-luminosity solar-luminosity + 0.005]
@@ -109,7 +121,16 @@ to set-as-blacks ;; turtle procedure
 ;  set albedo albedo-of-blackss
 ;  set age 0
   set size 0.6
+  set explored? false 
   create-links-with turtles-on neighbors4 with [any? blacks-here]
+  loop
+  [ let start one-of blacks with [not explored?]
+    if start = nobody [stop]
+    ask start [explore]
+    ;ask start [set explored? false]
+    ask blacks [ set explored? false ]
+    stop
+  ]
 end
 
 to set-as-whites  ;; turtle procedure
@@ -117,8 +138,28 @@ to set-as-whites  ;; turtle procedure
 ;  set albedo albedo-of-whitess
 ;  set age 0
   set size 0.6
+  set explored? false 
   create-links-with turtles-on neighbors4 with [any? whites-here]
+  loop
+  [ let start one-of whites with [not explored?]
+    if start = nobody [stop]
+    ask start [explore]
+    ;ask start [set explored? false]
+    ask whites [ set explored? false ]
+    stop
+  ]
 end
+
+to explore
+  if explored? [stop]
+  set explored? true
+  ask link-neighbors [explore]
+  if breed = blacks [
+  create-links-with other blacks with [explored?]]
+  if breed = whites [
+    create-links-with other whites with [explored?]]
+end
+
 
 to check-survivability ;; turtle procedure
 ;  let seed-threshold 0
@@ -181,32 +222,42 @@ to check-survivability ;; turtle procedure
 end
 
 to go_blacks
+  set blacks-pass false
   ifelse count (patches with [not any? whites-here  and not any?  blacks-here
-    and (count (turtles-on neighbors4 with [any? whites-here]) < count(neighbors4))]) != 0
+    and (count (turtles-on neighbors4 with [any? whites-here]) < count(neighbors4))
+    and (count (turtles-on neighbors4 with [any? blacks-here]) < count(neighbors4))
+    ]) != 0
   [
   ask n-of 1 patches with [not any? whites-here  and not any?  blacks-here
-    and (count (turtles-on neighbors4 with [any? whites-here]) < count(neighbors4))]
+    and (count (turtles-on neighbors4 with [any? whites-here]) < count(neighbors4))
+    and (count (turtles-on neighbors4 with [any? blacks-here]) < count(neighbors4))
+    ]
      [ sprout-blacks 1 [set-as-blacks] ]
   ]
-  [stop
+  [set blacks-pass true
   ]
    ask blacks [set libertynot count(neighbors4) - count(turtles-on neighbors4)
    set libertygroup (sum [libertynot] of link-neighbors + libertynot)]
 end
 
 to go_whites
+  set whites-pass false
   ifelse count (patches with [not any? blacks-here and not any? whites-here
-    and (count (turtles-on neighbors4 with [any? blacks-here]) < count(neighbors4))]) != 0
+    and (count (turtles-on neighbors4 with [any? blacks-here]) < count(neighbors4))
+    and (count (turtles-on neighbors4 with [any? whites-here]) < count(neighbors4))
+    ]) != 0
     [
   ask n-of 1 patches with [not any? blacks-here and not any? whites-here
-    and (count (turtles-on neighbors4 with [any? blacks-here]) < count(neighbors4))]
+    and (count (turtles-on neighbors4 with [any? blacks-here]) < count(neighbors4))
+    and (count (turtles-on neighbors4 with [any? whites-here]) < count(neighbors4))
+    ]
      [ sprout-whites 1 [set-as-whites] ]
     ]
-       [stop
-       ]
+   [set whites-pass true]
    ask whites [set libertynot count(neighbors4) - count(turtles-on neighbors4)
    set libertygroup (sum [libertynot] of link-neighbors + libertynot)]
 end
+
 
 to calc-temperature  ;; patch procedure
  ; let absorbed-luminosity 0
