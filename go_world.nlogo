@@ -1,9 +1,8 @@
 globals [
-;  max-age               ;; maximum age that all blacks live to
-  global-temperature    ;; the average temperature of the patches in the world
-  num-blackss            ;; the number of blacks blacks
-  num-whitess            ;; the number of whites blacks
-  scenario-phase        ;; interval counter used to keep track of what portion of scenario is currently occurring
+  global-temperature    
+  num-blackss         
+  num-whitess            
+  scenario-phase        
   global-score-blacks
   global-score-whites
   blacks-pass
@@ -15,55 +14,35 @@ breed [blacks]
 breed [whites]
 undirected-link-breed [teams team]
 
-patches-own [temperature
-;  score-blacks
-;  score-whites
-]  ;; local temperature at this location
+patches-own [temperature]  
 
 blacks-own [
-;  age       ;; age of the whites
-;  albedo    ;; fraction (0-1) of energy absorbed as heat from sunlight
-  libertynot   ;; free liberties
+  libertynot  
   score-blacks
   libertygroup
   explored?
 ]
 
 whites-own [
-;  age       ;; age of the whites
-;  albedo    ;; fraction (0-1) of energy absorbed as heat from sunlight
-  libertynot   ;; free liberties
+  libertynot 
   score-whites
   libertygroup
   explored?
 ]
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Setup Procedures ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 to setup
   clear-all
   set-default-shape blacks "flower"
   set-default-shape whites "flower"
   ask patches [ set pcolor gray ]
-
-;  set max-age 25
   set winner nobody
   set global-temperature 0
   ask blacks [set score-blacks 0]
   ask whites [set score-whites 0]
   set blacks-pass false
   set whites-pass false
-;  if (scenario = "ramp-up-ramp-down"    ) [ set solar-luminosity 0.8 ]
-;  if (scenario = "low solar luminosity" ) [ set solar-luminosity 0.6 ]
-;  if (scenario = "our solar luminosity" ) [ set solar-luminosity 1.0 ]
-;  if (scenario = "high solar luminosity") [ set solar-luminosity 1.4 ]
   seed-blackss-randomly
   seed-whitess-randomly
-;  ask blacks [go_blacks]
-;  ask whites [go_whites]
-;  ask blacks [set age random max-age]
   ask patches [calc-temperature]
   set global-temperature (mean [temperature] of patches)
   update-display
@@ -71,22 +50,12 @@ to setup
 end
 
 to seed-blackss-randomly
-   ;ask n-of 1 patches with [not any? blacks-here and not any? whites-here]
-    ; [ sprout-blacks 1 [set-as-blacks] ]
      go_blacks
 end
 
 to seed-whitess-randomly
-   ;ask n-of 1 patches with [not any? blacks-here and not any? whites-here]
-    ; [ sprout-whites 1 [set-as-whites] ]
      go_whites
 end
-
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Runtime Procedures ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
 
 to go
   ifelse not blacks-pass or  not whites-pass 
@@ -98,7 +67,7 @@ to go
    go_whites
    ask blacks [check-survivability]
    if (num-whitess = 0 or num-blackss = 0 ) [stop]
-   ask links [set hidden? true]
+   ;ask links [set hidden? true]
    set global-temperature (sum [temperature] of patches)
    set global-score-blacks (max [score-blacks] of blacks ) 
    set global-score-whites (max [score-whites] of whites )
@@ -115,14 +84,6 @@ to go
     [set winner "Tie"]
     output-print (word winner "  wins")
     stop]
- ;  if (scenario = "ramp-up-ramp-down")
- ;  [
- ;    if (ticks > 200 and ticks <= 400) [set solar-luminosity solar-luminosity + 0.005]
- ;    if (ticks > 600 and ticks <= 850) [set solar-luminosity solar-luminosity - 0.0025]
-; ]
-;   if (scenario = "low solar luminosity")  [set solar-luminosity 0.6 ]
-;   if (scenario = "our solar luminosity")  [set solar-luminosity 1.0 ]
-;   if (scenario = "high solar luminosity") [set solar-luminosity 1.4 ]
 end
 
 to experiment
@@ -130,10 +91,8 @@ to experiment
     go
 end
 
-to set-as-blacks ;; turtle procedure
+to set-as-blacks 
   set color black
-;  set albedo albedo-of-blackss
-;  set age 0
   set size 0.6
   set explored? false 
   create-links-with turtles-on neighbors4 with [any? blacks-here]
@@ -141,16 +100,13 @@ to set-as-blacks ;; turtle procedure
   [ let start one-of blacks with [not explored?]
     if start = nobody [stop]
     ask start [explore]
-    ;ask start [set explored? false]
     ask blacks [ set explored? false ]
     stop
   ]
 end
 
-to set-as-whites  ;; turtle procedure
+to set-as-whites  
   set color white
-;  set albedo albedo-of-whitess
-;  set age 0
   set size 0.6
   set explored? false 
   create-links-with turtles-on neighbors4 with [any? whites-here]
@@ -158,7 +114,6 @@ to set-as-whites  ;; turtle procedure
   [ let start one-of whites with [not explored?]
     if start = nobody [stop]
     ask start [explore]
-    ;ask start [set explored? false]
     ask whites [ set explored? false ]
     stop
   ]
@@ -175,63 +130,17 @@ to explore
 end
 
 
-to check-survivability ;; turtle procedure
-;  let seed-threshold 0
-;  let not-empty-spaces nobody
-;  let seeding-place nobody
-;if breed = whites [ ]
-;if breed = blacks [ ]
- ; set age (age + 1)
-  if ;1 = 0;
-  libertynot = 0 and libertygroup = 0
-  ;[
-  ;   set seed-threshold (-(temperature - 2) ^ 2 + 1 );((0.1457 * temperature) - (0.0032 * (temperature ^ 2)) - (0.6443))
-     ;; This equation may look complex, but it is just a parabola.
-     ;; This parabola has a peak value of 1 -- the maximum growth factor possible at an optimum
-     ;; temperature of 22.5 degrees C
-     ;; -- and drops to zero at local temperatures of 5 degrees C and 40 degrees C. [the x-intercepts]
-     ;; Thus, growth of new blacks can only occur within this temperature range,
-     ;; with decreasing probability of growth new blacks closer to the x-intercepts of the parabolas
-     ;; remember, however, that this probability calculation is based on the local temperature.
-     
-   ;  if (random 1.0 < seed-threshold) [
-   ;    set seeding-place one-of patches with [not any? blacks-here and not any? whites-here]
-
-    ;   if (seeding-place != nobody)
-    ;   [
-     ;    if (color = white)
-     ;    [
-     ;      ask seeding-place [sprout-whites 1 [set-as-whites]  ]
-     ;    ]
-     ;    if (color = black)
-     ;    [
-     ;      ask seeding-place [sprout-blacks 1 [set-as-blacks]  ]
-      ;   ]
-      ; ]
-    ; ]
-  ;]
+to check-survivability 
+  if libertynot = 0 and libertygroup = 0
   [
   if (breed = whites)
-  ;[ ask whites [set score-whites (score-whites + 
-   ;     1) ]
-        ;count(whites with [libertynot >= count(turtles-on neighbors4 with [any? blacks-here])]))
-   ; ask whites with [libertynot >= count(turtles-on neighbors4 with [any? blacks-here])] 
     [ask whites [set score-whites (score-whites + count(link-neighbors) + 1) ] 
      ask link-neighbors [die]
      die]
-  ;]
   if (breed = blacks)
-  ;[ ask blacks [set score-blacks (score-blacks + 
-        ;1 ) ]
-  
-        ;count( blacks with [libertynot >= count(turtles-on neighbors4 with [any? whites-here])])) ]
-   ; ask blacks with [libertynot >= count(turtles-on neighbors4 with [any? whites-here])] 
     [ask blacks [set score-blacks (score-blacks + count(link-neighbors) + 1) ]
       ask link-neighbors [die]
       die]
-  ;ask blacks [set score-whites (score-whites + 1)]
-  ;]
-
   ]
 end
 
@@ -273,32 +182,11 @@ to go_whites
 end
 
 
-to calc-temperature  ;; patch procedure
- ; let absorbed-luminosity 0
- ; let local-heating 0
- ; ifelse not any? blacks-here
-  ;[   ;; the percentage of absorbed energy is calculated (1 - albedo-of-surface) and then multiplied by the solar-luminosity
-      ;; to give a scaled absorbed-luminosity.
-   ; set absorbed-luminosity ((1 - albedo-of-surface) * solar-luminosity)
-  ;]
-  ;[
-      ;; the percentage of absorbed energy is calculated (1 - albedo) and then multiplied by the solar-luminosity
-      ;; to give a scaled absorbed-luminosity.
-  ;  ask one-of blacks-here
-   ;   [set absorbed-luminosity ((1 - albedo) * solar-luminosity)]
-  ;]
-  ;; local-heating is calculated as logarithmic function of solar-luminosity
-  ;; where a absorbed-luminosity of 1 yields a local-heating of 80 degrees C
-  ;; and an absorbed-luminosity of .5 yields a local-heating of approximately 30 C
-  ;; and a absorbed-luminosity of 0.01 yields a local-heating of approximately -273 C
-  ;ifelse absorbed-luminosity > 0
-   ;   [set local-heating 72 * LN(absorbed-luminosity) + 80]
-    ;  [set local-heating 80]
-  set temperature (count(turtles-on neighbors4)) ;with [not any? blacks-here]);((temperature + local-heating) / 2)
-     ;; set the temperature at this patch to be the average of the current temperature and the local-heating effect
+to calc-temperature  
+  set temperature (count(turtles-on neighbors4)) 
 end
 
-to paint-blacks   ;; whites painting procedure which uses the mouse location draw blacks when the mouse button is down
+to paint-blacks   
   if mouse-down?
   [
     ask patch mouse-xcor mouse-ycor [
@@ -313,24 +201,25 @@ to paint-blacks   ;; whites painting procedure which uses the mouse location dra
         if paint-blacks-as = "remove"
           [ask blacks-here [die]]
       ]
-      display  ;; update view
+      display  
     ]
   ]
 end
 
 to update-display
   ifelse (show-temp-map? = true)
-    [ ask patches [set pcolor scale-color brown temperature -7 7] ]  ;; scale color of patches to the local temperature
+    [ ask patches [set pcolor scale-color brown temperature -7 7] ]  
     [ ask patches [set pcolor grey] ]
 
   ifelse (show-blacks? = true)
     [ ask blacks [set hidden? false] ]
     [ ask blacks [set hidden? true] ]
+    
+  ifelse (show-connections? = true)
+   [ ask links [set hidden? false] ]
+    [ ask links [set hidden? true] ]
+  
 end
-
-
-; Copyright 2006 Uri Wilensky.
-; See Info tab for full copyright and license.
 @#$#@#$#@
 GRAPHICS-WINDOW
 424
@@ -359,81 +248,11 @@ GRAPHICS-WINDOW
 ticks
 30.0
 
-SLIDER
-5
-180
-200
-213
-albedo-of-surface
-albedo-of-surface
-0
-1
-0.4
-0.01
-1
-NIL
-HORIZONTAL
-
-CHOOSER
-7
-216
-202
-261
-scenario
-scenario
-"ramp-up-ramp-down" "maintain current luminosity" "low solar luminosity" "our solar luminosity" "high solar luminosity"
-2
-
-SLIDER
-5
-140
-200
-173
-solar-luminosity
-solar-luminosity
-0.0010
-3
-0.6
-0.0010
-1
-NIL
-HORIZONTAL
-
-SLIDER
-245
-10
-415
-43
-start-%-blackss
-start-%-blackss
-0
-50
-20
-1
-1
-NIL
-HORIZONTAL
-
-SLIDER
-75
-10
-240
-43
-start-%-whitess
-start-%-whitess
-0
-50
-50
-1
-1
-NIL
-HORIZONTAL
-
 SWITCH
-11
-569
-161
-602
+14
+306
+164
+339
 show-temp-map?
 show-temp-map?
 0
@@ -475,10 +294,10 @@ NIL
 1
 
 SWITCH
-10
-529
-160
-562
+14
+264
+164
+297
 show-blacks?
 show-blacks?
 0
@@ -486,28 +305,10 @@ show-blacks?
 -1000
 
 PLOT
-215
-85
-415
-235
-Luminosity
-NIL
-NIL
-0.0
-100.0
-0.5
-1.5
-true
-false
-"" ""
-PENS
-"default" 1.0 0 -16777216 true "" "plot solar-luminosity"
-
-PLOT
-215
-245
-415
-395
+220
+13
+420
+163
 Capacity
 NIL
 NIL
@@ -522,10 +323,10 @@ PENS
 "default" 1.0 0 -16777216 true "" "plot global-temperature"
 
 PLOT
-215
-405
-415
-555
+220
+173
+420
+323
 Score
 NIL
 NIL
@@ -540,59 +341,12 @@ PENS
 "blacks" 1.0 0 -16777216 true "" "plot (num-blackss)"
 "whites" 1.0 0 -7500403 true "" "plot (num-whitess)"
 
-SLIDER
-75
-45
-240
-78
-albedo-of-whitess
-albedo-of-whitess
-0
-0.99
-0.15
-0.01
-1
-NIL
-HORIZONTAL
-
-SLIDER
-245
-45
-415
-78
-albedo-of-blackss
-albedo-of-blackss
-0
-0.99
-0.26
-0.01
-1
-NIL
-HORIZONTAL
-
 BUTTON
-19
-357
-154
-402
-remove all daisies
-ask daisies [die]\ndisplay
-NIL
-1
-T
-OBSERVER
-NIL
-NIL
-NIL
-NIL
-1
-
-BUTTON
-18
-416
-153
-459
-paint daisies
+8
+141
+143
+184
+Put manually
 paint-blacks
 T
 1
@@ -605,10 +359,10 @@ NIL
 1
 
 CHOOSER
-14
-470
-150
-515
+12
+199
+148
+244
 paint-blacks-as
 paint-blacks-as
 "add black" "add white" "remove"
@@ -648,94 +402,54 @@ NIL
 NIL
 1
 
+SWITCH
+16
+355
+194
+388
+show-connections?
+show-connections?
+0
+1
+-1000
+
 @#$#@#$#@
 ## WHAT IS IT?
 
-This model explores the "Gaia hypothesis", which considers the Earth as a single, self-regulating system including both living and non-living parts. In particular, this model explores how living organisms both alter and are altered by climate, which is non-living. The example organisms are daisies and the climatic factor considered is temperature.
-
-Daisyworld is a world filled with two different types of daisies: black daisies and white daisies.  They differ in albedo, which is how much energy they absorb as heat from sunlight.  White daisies have a high surface albedo and thus reflect light and heat, thus cooling the area around them.  Black daisies have a low surface albedo and thus absorb light and heat, thus heating the area around them.  However, there is only a certain temperature range in which daisies can reproduce; if the temperature around a daisy is outside of this range, the daisy will produce no offspring and eventually die of old age.
-
-When the climate is too cold it is necessary for the black daisies to propagate in order to raise the temperature, and vice versa -- when the climate is too warm, it is necessary for more white daisies to be produced in order to cool the temperature.  For a wide range of parameter settings, the temperature and the population of daisies will eventually stabilize.  However, it is possible for Daisyworld to get either too hot or too cold, in which case the daisies are not able to bring the temperature back under control and all of the daisies will eventually die.
 
 ## HOW IT WORKS
 
-White daisies, black daisies, and open ground (empty patches) each have an albedo or percentage of energy they absorb as heat from sunlight. Sunlight energy can be changed with the SOLAR-LUMINOSITY slider (a value of 1.0 simulates the average solar luminosity of our sun).
 
-Each time step, every patch will calculate the temperature at that spot based on (1) the energy absorbed by the daisy at that patch and (2) the diffusion of 50% of the temperature value at that patch between its neighbors.  Open ground patches that are adjacent to a daisy have a probability of sprouting a daisy that is the same color as the neighboring daisy, based on a parabolic probability function that depends on the local temperature (where an optimum temperature of 22.5 yields a maximum probability of 100% of sprouting a new daisy). Daisies age each step of the simulation until they reach a maximum age, at which point they die and the patch they were in becomes open.
 
 ## HOW TO USE IT
 
-START-%-WHITES and START-%-BLACKS sets the starting percentage of the patches that will be occupied by daisies (of either color) after pressing SETUP.
-
-Selecting PAINT-DAISIES-AS and pressing PAINT-DAISIES allows the user to draw or erase daisies in the VIEW, by left clicking on patches.
-
-ALBEDO-OF-WHITES and ALBEDO-OF-BLACKS sets the amount of heat absorbed by each of these daisy colors. ALBEDO-OF-SURFACE sets the amount of heat absorbed by an empty patch.
-
-The SOLAR-LUMINOSITY sets the amount of incident energy on each patch from sunlight. But this value only will stay fixed at the user set value if the SCENARIO chooser is set to "maintain current luminosity". Other values of this chooser will change the albedo values. For example "ramp-up-ramp-down" will start the solar luminosity at a low value, then start increasing it to a high value, and then bring it back down again over the course of a model run.
-
-SHOW-TEMP-MAP? shows a color map of temperature at each patch. Light red represents hotter temperatures, and darker red represents colder temperatures.
 
 ## THINGS TO NOTICE
 
-Run the simulation. What happens to the daisies?  Do the populations ever remain stable? Are there ever population booms and busts?  If so, what causes them? (Hint: how do the daisies affects the climate? How does the climate then affect the daisies?)
 
-What happens if boom and bust cycles just keep getting bigger and bigger? The swings can't keep getting bigger forever.
-
-Does the planet ever become completely filled with life, or completely devoid of life?
-
-Try running the simulation without the daisies. What happens to the planet's temperature? How is it different from what happens with the daisies?
-
-Can the Daisyworld system be said to exhibit "hysteresis"?  Hysteresis is a property of systems that do not instantly follow the forces applied to them, but react slowly, or do not return completely to their original state.  The state of such systems depend on their immediate history.
 
 ## THINGS TO TRY
 
-Try running the model with SHOW-DAISIES? off and SHOW-TEMP-MAP? on. You might be able to see interesting spatial patterns that emerge in temperature concentrations and periodic redistricting of temperature regions more easily in this mode.
-
-Try adjusting the fixed temperature diffusion setting in the procedures (change it from 0.5). What happens to the behavior of Daisyworld if temperature is never diffused (set to 0.0)?
 
 ## EXTENDING THE MODEL
 
-Black and white daisies represent two extreme types of daisies that could exist in this world.  Implement a third species of daisy.  You will need to choose what your daisy does and how it is different from black and white daisies.  How does your new daisy affect the results of this model?
 
-Sunlight is only one aspect that controls the growth of daisies and other forms of life. Change the model so different parts of the world have different levels of soil quality.  How will this affect the outcome?
-
-Many people feel that the Gaia hypothesis can be disturbed by human causes.  Implement pollution in the model.  Does this cause the daisies to die off quicker or more often?
-
-Can you think of any other ways in which living organisms both alter and are altered by their environment?
 
 ## NETLOGO FEATURES
 
-Uses the `diffuse` primitive to distribute heat between patches.
 
 ## RELATED MODELS
 
-An alternate Daisyworld model is listed on the [User Community Models](http://ccl.northwestern.edu/netlogo/models/community/) page. It uses patches only, no turtles.
 
 ## CREDITS AND REFERENCES
 
-The Daisyworld model was first proposed and implemented by Lovelock and Andrew Watson. The original Gaia hypothesis is due to Lovelock.
-
-Watson, A.J., and J.E. Lovelock, 1983, "Biological homeostasis of the global environment: the parable of Daisyworld", Tellus 35B, 286-289. (The original paper by Watson and Lovelock introducing the Daisyworld model.)
-
-http://www.carleton.edu/departments/geol/DaveSTELLA/Daisyworld/daisyworld_model.htm
 
 
 ## HOW TO CITE
 
-If you mention this model in a publication, we ask that you include these citations for the model itself and for the NetLogo software:
 
-* Novak, M. and Wilensky, U. (2006).  NetLogo Daisyworld model.  http://ccl.northwestern.edu/netlogo/models/Daisyworld.  Center for Connected Learning and Computer-Based Modeling, Northwestern Institute on Complex Systems, Northwestern University, Evanston, IL.
-* Wilensky, U. (1999). NetLogo. http://ccl.northwestern.edu/netlogo/. Center for Connected Learning and Computer-Based Modeling, Northwestern Institute on Complex Systems, Northwestern University, Evanston, IL.
 
 ## COPYRIGHT AND LICENSE
-
-Copyright 2006 Uri Wilensky.
-
-![CC BY-NC-SA 3.0](http://i.creativecommons.org/l/by-nc-sa/3.0/88x31.png)
-
-This work is licensed under the Creative Commons Attribution-NonCommercial-ShareAlike 3.0 License.  To view a copy of this license, visit http://creativecommons.org/licenses/by-nc-sa/3.0/ or send a letter to Creative Commons, 559 Nathan Abbott Way, Stanford, California 94305, USA.
-
-Commercial licenses are also available. To inquire about commercial licenses, please contact Uri Wilensky at uri@northwestern.edu.
 @#$#@#$#@
 default
 true
