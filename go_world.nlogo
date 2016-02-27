@@ -82,7 +82,7 @@ to go
     [set winner "Whites"]
     if num-blackss = num-whitess
     [set winner "Tie"]
-    output-print (word winner "  wins")
+    output-print (word winner "-wins,"  num-blackss ","  num-whitess )
     stop]
 end
 
@@ -224,8 +224,8 @@ end
 GRAPHICS-WINDOW
 424
 10
-974
-581
+704
+311
 -1
 -1
 27.0
@@ -239,9 +239,9 @@ GRAPHICS-WINDOW
 0
 1
 0
-19
+9
 0
-19
+9
 1
 1
 1
@@ -255,7 +255,7 @@ SWITCH
 339
 show-temp-map?
 show-temp-map?
-0
+1
 1
 -1000
 
