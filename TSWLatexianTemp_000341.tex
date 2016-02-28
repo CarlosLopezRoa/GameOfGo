@@ -76,11 +76,18 @@ https://github.com/mr3m/GameOfGo
 %\tableofcontents
 
 \section{Introduction}
-The game of Go, also known as \emph{Wéiqí: 围棋} in Chinese, which means literally \emph{encircling game}, is a two-player board game in which the aim is to surround more territory that the opponent \cite{Kunkle2002}.
+The game of Go, also known as {Wéiqí: 围棋} in Chinese, which means literally \emph{surround game}, is a two-player board game in which the aim is to surround more territory that the opponent \cite{Kunkle2002}.
 
-It was originated in ancient China more than 2,500 years ago. It was considered one of the four essential arts\footnote{The four arts ({siyi: 四艺}): To play the guqin, a stringed instrument ({Qín:  琴}), the strategy game of Go ({Qí:  棋}), Chinese calligraphy ({Shu:  书}), Chinese painting ({Huà:  画}) } of a cultured Chinese scholar.
+It was originated in ancient China more than 2,500 years ago (figure \ref{l1}). It was considered one of the four essential arts\footnote{The four arts ({siyi: 四艺}): To play the guqin, a stringed instrument ({Qín:  琴}), the strategy game of Go ({Qí:  棋}), Chinese calligraphy ({Shu:  书}), Chinese painting ({Huà:  画}) } of a cultured Chinese scholar.
 
-Despite it's relative simple rules, the relative complexity of Go with respect to Western chess is far more superior ($10^{761}$ compared to $10^{120}$ possible games)
+\begin{figure}[!ht]
+\begin{center}
+\includegraphics[width=4cm]{Astana.jpg}
+\caption{\footnotesize{Woman Playing Go (Tang Dynasty c. 744), discovered at the Astana Graves}\label{l1}}
+\end{center}
+\end{figure}
+
+Despite it's relative simple rules, the relative complexity of Go with respect to Western chess is far more superior ($10^{761}$ compared to $10^{120}$ possible games).
 
 Precisely because of this great complexity is that, different from chess which was \emph{conquered} by IBM's \textsc{Deep blue} in 1996 agains't world's Grand Master \textsc{Gary Kaspárov}, no equivalent conquest has been achieved by computer go until recent victory of Google's \textsc{Alpha Go} agains't the European Go Champion \cite{Silver2016a}. 
 
@@ -95,11 +102,27 @@ Each stone is said to have 4 \emph{liberties} ({Qì:  气})  when the four ortho
 
 Once placed on the board, stones may not be moved, but stones may be removed from the board if captured. A stone (or group of stones) it's captured by the opponent when all the liberties are suppressed.
 
+ An enclosed liberty (or liberties) is called an \emph{eye}\footnote{see figure \ref{f1}} (眼), and a group of stones with at least two separate eyes is said to be unconditionally \emph{alive}. Such groups cannot be captured, even if surrounded. \emph{Dead} stones are stones that are surrounded and in groups with poor shape (one or no eyes), and thus cannot resist eventual capture.
+
+\begin{figure}[!ht]
+\begin{center}
+\includegraphics[width=5.5cm]{eyes.png}
+\caption{\footnotesize All the smallest groups with two eyes by blacks, enclosed by whites without being able to capture the groups \label{f1}}
+\end{center}
+\end{figure}
+
+There are only two rules in Go, namely: 
+
+\begin{enumerate}
+\item \textbf{The rule of Liberty}: Every stone remaining on the board must have at least one liberty.
+\item \textbf{The ko rule (劫)}: The stones on the board must never repeat a previous position of stones
+\end{enumerate}
+
+Remark that by rule 1, suicide moves are forbidden, that is jumping into an eye of the opponent contained in a at-least-two-eye-group; if the group is a one-eye-group then this move is allow. Also please note that to blocks one eye, though permitted is by no means desired, since it can turn alive groups into dead ones. Also as a common consensus, blacks play first.   
+
 The two players place stones alternately until they reach a point at which neither player wishes to make another move. When a game concludes, the territory is counted along with captured stones to determine the winner. 
 
-
-
-\section{Development}
+\section{Implementation}
 A box world was set up in NetLogo, to represent the board game, that is, with no periodicity in the edges.  
 
 \section{Results}
