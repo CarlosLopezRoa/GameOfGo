@@ -1,10 +1,6 @@
-Title         : GameOfGo
-Author        : CLopezR
-Logo          : False
-
-[TITLE]
-
-# To Run
+# GameOfGo
+##Implementation of Game of Go using Multiagent Systems in Netlogo 
+### To Run
 
 Please open go_world.nlogo with your netlogo client.
 
