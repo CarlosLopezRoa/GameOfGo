@@ -1,5 +1,5 @@
 globals [
-  global-temperature    
+  global-temperature     
   num-blackss         
   num-whitess            
   scenario-phase        
@@ -67,7 +67,6 @@ to go
    go_whites
    ask blacks [check-survivability]
    if (num-whitess = 0 or num-blackss = 0 ) [stop]
-   ;ask links [set hidden? true]
    set global-temperature (sum [temperature] of patches)
    set global-score-blacks (max [score-blacks] of blacks ) 
    set global-score-whites (max [score-whites] of whites )
@@ -82,7 +81,7 @@ to go
     [set winner "Whites"]
     if num-blackss = num-whitess
     [set winner "Tie"]
-    output-print (word winner "  wins")
+    output-print (word winner "-wins,"  num-blackss ","  num-whitess )
     stop]
 end
 
@@ -218,5 +217,4 @@ to update-display
   ifelse (show-connections? = true)
    [ ask links [set hidden? false] ]
     [ ask links [set hidden? true] ]
-  
 end

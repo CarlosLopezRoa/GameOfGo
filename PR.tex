@@ -89,7 +89,7 @@ It was originated in ancient China more than 2,500 years ago (figure \ref{l1}). 
 
 Despite it's relative simple rules, the relative complexity of Go with respect to Western chess is far more superior ($10^{761}$ compared to $10^{120}$ possible games).
 
-Precisely because of this great complexity is that, different from chess which was \emph{conquered} by IBM's \textsc{Deep blue} in 1996 agains't world's Grand Master \textsc{Gary Kaspárov}, no equivalent conquest has been achieved by computer go until recent victory of Google's \textsc{Alpha Go} agains't the European Go Champion \cite{Silver2016a}. 
+Precisely because of this great complexity is that, different from chess which was \emph{conquered} by IBM's \textsc{Deep blue} in 1996 agains't world's Grand Master \textsc{Gary Kaspárov}, no equivalent conquest has been achieved by computer go until recent victory of Google's \textsc{Alpha Go} agains't \textsc{Fan Hui} the European Go Champion \cite{Silver2016a}. 
 
 In this study we took a multiagent system approach to the problem of computer Go, first, a description of the implementation is made, after some tests were carried out and described at the end some conclusions and future work are drawn.
 
@@ -118,12 +118,45 @@ There are only two rules in Go, namely:
 \item \textbf{The ko rule (劫)}: The stones on the board must never repeat a previous position of stones
 \end{enumerate}
 
-Remark that by rule 1, suicide moves are forbidden, that is jumping into an eye of the opponent contained in a at-least-two-eye-group; if the group is a one-eye-group then this move is allow. Also please note that to blocks one eye, though permitted is by no means desired, since it can turn alive groups into dead ones. Also as a common consensus, blacks play first.   
+Remark that by rule 1, suicide moves are forbidden, that is jumping into an eye of the opponent contained in a at-least-two-eye-group; if the group is a one-eye-group then this move is allowed. Also please note that to blocks one eye, though permitted is by no means desired, since it can turn alive groups into dead ones. Also as a common consensus, blacks play first.   
 
 The two players place stones alternately until they reach a point at which neither player wishes to make another move. When a game concludes, the territory is counted along with captured stones to determine the winner. 
 
 \section{Implementation}
 A box world was set up in NetLogo, to represent the board game, that is, with no periodicity in the edges.  
+
+In this world, two computers play Go agains't each other. Though, the computer players are composed of the collective decision of the stones placed in the board, that is, using the distributed artificial intelligence approach of multiagent systems. 
+
+The stones were modeled using reactive agents, the environment is a 19x19 closed two dimensional grid, all agents share the same organization, the interaction between each other happens when they share a liberty. Also agents of the same color connected through their liberties form undirected links between each other.  The goal, is the same as the game, to occupy the most territory.  The game ends when both agent types pass consecutively. 
+
+\subsection{Making a move}
+A general overview of the game dynamics can be seen in the flow diagram \ref{d1}
+
+\begin{figure}[!ht]
+\begin{center}
+\includegraphics[width=7cm]{df.png}
+\caption{\footnotesize {Flow diagram of the main components of the program.} First we initialize the variables. A if condition governs the flow, which is the condition to end the game.  \label{d1}}
+\end{center}
+\end{figure}
+
+Each turtle has four internal variables: The number of liberties, the number of captured stones, the liberties of the group in which they are in, and a boolean variable related to the exploration of groups. 
+ 
+Each patch in the environment has a temperature associated, which is composed of the number of stones surrounding this patch, that is a measure of liberty of the patch. 
+
+To make a move, we follow the flow described in diagram \ref{d2}
+
+\begin{figure}[!ht]
+\begin{center}
+\includegraphics[width=7cm]{go_blacks.png}
+\caption{\footnotesize Flow to play blacks. To play whites is simmetrical. A IF statement looks for free patches, if found a black turtles is sprout and related with it's neighbours recursively, if not then blacks pass. Then this stone is assigned their liberties, and the groups get the liberties recalculated.\label{d2}}
+\end{center}
+\end{figure}
+
+To calculate the liberties of one turtles is just to subtract the number of stones in the neighboring spaces from the number of neighboring spaces\footnote{corner stones get between 3 and 2 instead of 4 neighboring spaces}, the group liberty is defined as the sum of the individual liberties. If both the individual liberty and the group one are equal to zero, then the stone (group) dies. 
+
+The discovery of the group of one stones is done by asking each stone to name it's neighbors recursively, when all neighbors have been named, then we assign an undirected link between this stone and all the named neighbors. This due to the transitivity: If $A$ is neighbor of $B$ and $B$ is neighbor of $C$ then $A$ is neighbor of $C$.
+
+Thing to note, is that because of the condition to pass, then it's not possible to commit suicide or to block owns eyes. 
 
 \section{Results}
 

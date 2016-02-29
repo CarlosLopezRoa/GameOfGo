@@ -67,7 +67,6 @@ to go
    go_whites
    ask blacks [check-survivability]
    if (num-whitess = 0 or num-blackss = 0 ) [stop]
-   ;ask links [set hidden? true]
    set global-temperature (sum [temperature] of patches)
    set global-score-blacks (max [score-blacks] of blacks ) 
    set global-score-whites (max [score-whites] of whites )
@@ -218,7 +217,6 @@ to update-display
   ifelse (show-connections? = true)
    [ ask links [set hidden? false] ]
     [ ask links [set hidden? true] ]
-  
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
@@ -242,8 +240,8 @@ GRAPHICS-WINDOW
 19
 0
 19
-0
-0
+1
+1
 1
 ticks
 30.0
@@ -255,7 +253,7 @@ SWITCH
 339
 show-temp-map?
 show-temp-map?
-1
+0
 1
 -1000
 
